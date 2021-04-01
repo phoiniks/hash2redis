@@ -16,6 +16,7 @@ my @subs = qw(
     extractKeysFromHashRef
     extractValuesFromHashRef
     hashref2arrayref
+    hashref2redis
     setRedis
     getRedis
 );
@@ -43,6 +44,7 @@ use_ok( 'Hash2Redis', @subs );
 can_ok( __PACKAGE__, 'extractKeysFromHashRef' );
 can_ok( __PACKAGE__, 'extractValuesFromHashRef' );
 can_ok( __PACKAGE__, 'hashref2arrayref' );
+can_ok( __PACKAGE__, 'hashref2redis' );
 can_ok( __PACKAGE__, 'setRedis' );
 can_ok( __PACKAGE__, 'getRedis' );
 
@@ -80,5 +82,14 @@ isnt( hashref2arrayref( $hashref->{ TEST1 } ), [ 'test1', 'BLÖD', 'test2', 'DOO
 isnt( hashref2arrayref( $hashref->{ TEST2 } ), [ 'test1', 'BLÖD', 'test2', 'DOOF', 'test3', 'BESCHOIERT' ], $desc );
 isnt( hashref2arrayref( $hashref->{ TEST3 } ), [ 'test1', 'BLÖD', 'test2', 'DOOF', 'test3', 'BESCHOIERT' ], $desc );
 
+$desc = 'Hash-Daten in Redis kopiert.';
+ok( hashref2redis( 'TEST1', $hashref->{ 'TEST1' } ), sprintf "TEST1: %s", $desc );
+ok( hashref2redis( 'TEST2', $hashref->{ 'TEST2' } ), sprintf "TEST2: %s", $desc );
+ok( hashref2redis( 'TEST3', $hashref->{ 'TEST3' } ), sprintf "TEST3: %s", $desc );
+
+$desc = 'Daten in Redis stimmen mit Hash überein.';
+cmp_deeply( getRedis( 'TEST1' ), $hashref->{ 'TEST1' }, sprintf "TEST1: %s", $desc );
+cmp_deeply( getRedis( 'TEST2' ), $hashref->{ 'TEST2' }, sprintf "TEST2: %s", $desc );
+cmp_deeply( getRedis( 'TEST3' ), $hashref->{ 'TEST3' }, sprintf "TEST3: %s", $desc );
 
 done_testing();
