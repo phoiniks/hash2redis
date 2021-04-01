@@ -1,6 +1,5 @@
 package Hash2Redis;
 
-use Data::Dump qw( dump );
 use Redis;
 
 use Exporter qw( import );
@@ -71,3 +70,4 @@ sub getRedis {
     return { $schluessel => \%hash };
 }
 
+1;
