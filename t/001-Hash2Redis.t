@@ -62,16 +62,23 @@ $iterator = extractValuesFromHashRef( $hashref );
 my $value = $iterator->();
 like( ref $value, qr/HASH/, 'Nr. 1: Referenz auf Hash.' );
 eq_or_diff( $value, { test1 => 'BLÖD', test2 => 'DOOF', test3 => 'BESCHEUERT' }, 'Inhalt von Hash-Wert Nr. 1 - wie erwartet.' );
+isnt( $value, { test1 => 'BLOED', test2 => 'DOOF', test3 => 'BESCHEUERT' }, 'Inhalt von Hash-Wert Nr. 1 - nicht wie erwartet.' );
 
 $value = $iterator->();
 like( ref $value, qr/HASH/, 'Nr. 2: Referenz auf Hash.' );
 eq_or_diff( $value, { test4 => 'HOLLERADUDÖDLDU', test5 => 'ZICKEZACKEHÜHNERKACKE', test6 => 'WASNDUDAPPHAUABBNDUSAU' }, 'Inhalt von Hash-Wert Nr. 2 - wie erwartet.' );
+isnt( $value, { test4 => 'HOLLERADUDÖDLDU', test5 => 'ZICKEZACKEHÜHNERKACKE', test6 => 'WASNDUDAPPHAUABNDUSAU' }, 'Inhalt von Hash-Wert Nr. 2 - nicht wie erwartet.' );
 
 $value = $iterator->();
 like( ref $value, qr/HASH/, 'Nr. 3: Referenz auf Hash.' );
 eq_or_diff( $value, { test7 => 'Nuria Acacio López', test8 => 'Laura Grell Acacio', test9 => 'Andreas Grell', test10 => 'Francisco Pizarro' }, 'Inhalt Hash-Wert Nr. 3 - wie erwartet.' );
+isnt( $value, { test7 => 'Nuria Acacio Lopez', test8 => 'Laura Grell Acacio', test9 => 'Andreas Grell', test10 => 'Francisco Pizarro' }, 'Inhalt Hash-Wert Nr. 3 - nicht wie erwartet.' );
 
-my $arrayref = hashref2arrayref( $hashref->{ TEST1 } );
-eq_or_diff( $arrayref, [ 'test1', 'BLÖD', 'test2', 'DOOF', 'test3', 'BESCHEUERT' ], 'Hash-Referenz erfolgreich in Array-Referenz umgewandelt.' );
+my $desc = 'Hash-Referenz nicht erfolgreich in Array-Referenz umgewandelt.'; 
+eq_or_diff( hashref2arrayref( $hashref->{ TEST1 } ), [ 'test1', 'BLÖD', 'test2', 'DOOF', 'test3', 'BESCHEUERT' ], 'Hash-Referenz erfolgreich in Array-Referenz umgewandelt.' );
+isnt( hashref2arrayref( $hashref->{ TEST1 } ), [ 'test1', 'BLÖD', 'test2', 'DOOF', 'test3', 'BESCHOIERT' ], $desc );
+isnt( hashref2arrayref( $hashref->{ TEST2 } ), [ 'test1', 'BLÖD', 'test2', 'DOOF', 'test3', 'BESCHOIERT' ], $desc );
+isnt( hashref2arrayref( $hashref->{ TEST3 } ), [ 'test1', 'BLÖD', 'test2', 'DOOF', 'test3', 'BESCHOIERT' ], $desc );
+
 
 done_testing();
