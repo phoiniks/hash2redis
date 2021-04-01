@@ -1,21 +1,25 @@
 package Hash2Redis;
-    
+
+use Data::Dump qw( dump );
 use Redis;
 
 use Exporter qw( import );
 
 our @EXPORT_OK = qw(
     extractKeysFromHashRef
+    extractValuesFromHashRef
+    hashref2arrayref
     setRedis
     getRedis
 );
 
 
 sub extractKeysFromHashRef {
-    my $ref = shift;
+    my $hashref = shift;
 
     my $idx;
-    my @keys = map { $_ } sort { $a cmp $b } keys %$ref;
+    my @keys = map { $_ } sort { $a cmp $b } keys %$hashref;
+
     return sub {
 	for ( @keys ){
 	    return $keys[$idx++];
@@ -24,13 +28,28 @@ sub extractKeysFromHashRef {
 }
 
 
-sub flattenArrayRefOfHashRefs {
-    my $arrayref = shift;
+sub extractValuesFromHashRef {
+    my $hashref = shift;
 
-    my @flattened = map { $_, [ @{ %$_ } ] if ref $_ =~ /HASH/ } @$arrayref;
+    my $idx;
+    my @values = map { $hashref->{ $_ } } sort { $a cmp $b } keys %$hashref;
 
-    return \@flattened;
+    return sub {
+	for ( @values ){
+	    return $values[$idx++];
+	}
+    }
 }
+
+
+sub hashref2arrayref {
+    my $hashref = shift;
+
+    my @array = map { $_, $hashref->{ $_ } } sort { $a cmp $b } keys %$hashref;
+
+    return \@array;
+}
+
 
 sub setRedis {
     my $schluessel = shift;
