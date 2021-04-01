@@ -8,6 +8,7 @@ our @EXPORT_OK = qw(
     extractKeysFromHashRef
     extractValuesFromHashRef
     hashref2arrayref
+    hashref2redis
     setRedis
     getRedis
 );
@@ -50,6 +51,16 @@ sub hashref2arrayref {
 }
 
 
+sub hashref2redis {
+    my $schluessel = shift;
+    my $hashref    = shift;
+
+    my $arrayref = hashref2arrayref( $hashref );
+
+    setRedis( $schluessel, $arrayref );
+}
+
+
 sub setRedis {
     my $schluessel = shift;
     my $arrayref = shift;
@@ -67,7 +78,7 @@ sub getRedis {
 
     my %hash = $rds->hgetall( $schluessel );
 
-    return { $schluessel => \%hash };
+    return \%hash;
 }
 
 1;
